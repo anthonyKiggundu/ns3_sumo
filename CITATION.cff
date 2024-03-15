@@ -11,13 +11,6 @@ references:
       given-names: Michael 
     - family-names: Schotten
       given-names: Hans. D
- doi: ""
-    issue: 13
-    journal: "IEEE Explore"
-    title: "A Mobility Oriented Use-case Framework for Ouality Of Service Sustainability Simulations"
-    type: article
-    volume: 42
-    year: 2024
 
 contact:
   - affiliation: "German Research Center For Artificial Intelligence (DFKI)"
@@ -39,6 +32,12 @@ identifiers:
   - description: "Associated document identifier"
     type: doi
     value: ""
+    issue: 13
+    journal: "IEEE Explore"
+    title: "A Mobility Oriented Use-case Framework for Ouality Of Service Sustainability Simulations"
+    type: article
+    volume: 42
+    year: 2024
 license:
  - Apache-2.0
  - MIT
