@@ -1,0 +1,33 @@
+authors:
+  - family-names: Kiggundu
+    given-names: Anthony
+  - family-names: Alzalam
+    given-names: Ihab
+  - family-names: Zentarra
+    given-names: Michael 
+  - family-names: Schotten
+    given-names: Hans. D
+
+contact:
+  - affiliation: "German Research Center For Artificial Intelligence (DFKI)"
+    email: anthony.kiggundu@dfki.uni-kl.de
+    family-names: Kiggundu
+    given-names: Anthony
+
+cff-version: 1.0.0
+keywords: 
+   - 6G 
+   - NS-3
+   - V2X
+   - QoS Sustainability
+   - Wireless Communication
+message: "If you use this software, please cite both the article and the software itself."
+title: "A Mobility Oriented Use-case Framework for Ouality Of Service Sustainability Simulations"
+
+identifiers:
+  - description: "Associated document identifier"
+    type: doi
+    value: ""
+license:
+ - Apache-2.0
+ - MIT
