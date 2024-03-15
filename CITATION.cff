@@ -1,12 +1,23 @@
 authors:
   - family-names: Kiggundu
     given-names: Anthony
-  - family-names: Alzalam
-    given-names: Ihab
-  - family-names: Zentarra
-    given-names: Michael 
-  - family-names: Schotten
-    given-names: Hans. D
+references:
+  - authors:
+    - family-names: Kiggundu
+      given-names: Anthony
+    - family-names: Alzalam
+      given-names: Ihab
+    - family-names: Zentarra
+      given-names: Michael 
+    - family-names: Schotten
+      given-names: Hans. D
+ doi: ""
+    issue: 13
+    journal: "IEEE Explore"
+    title: "A Mobility Oriented Use-case Framework for Ouality Of Service Sustainability Simulations"
+    type: article
+    volume: 42
+    year: 2024
 
 contact:
   - affiliation: "German Research Center For Artificial Intelligence (DFKI)"
