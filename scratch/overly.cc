@@ -1,3 +1,16 @@
+/*
+###################################################################################################
+With these extensions to NS-3 functionality, it is now possible to simulate mobility use-cases 
+like V2X setups. The mobility profile for each device in a selected cite is topographically 
+captured by Open Street Map and emulated using the SUMO tool. The output of this emulation is then
+fed into the TraCI library to record the devices' trajectories as a text file.
+An arbitrarily pre-defined file constituent of the base station locations plus this trajectories file
+are then the input to the NS-3 tooling such that the throughput measures of each device plus the 
+standard connectivity metrics are written as a dataset for self-organizing the Radio Access Network
+using ML algorithms.
+###################################################################################################
+*/
+
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
@@ -29,8 +42,6 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/range/combine.hpp>
-
-// #include "ns3/epc-sgw-pgw-application.h"
 
 #include <math.h>
 #include <iterator>
@@ -182,13 +193,8 @@ NS_LOG_COMPONENT_DEFINE ("SumoNS3UesTrajectoriesHandoverMeasures");
 
 Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 
-// void attachinfuture(NetDeviceContainer& ues, int ueid){
 void attachinfuture(NetDeviceContainer& uesdev, NetDeviceContainer& enbsdev){
   // lteHelper->Attach (ues.Get(ueid)); 
-  // ToDo:: Try to do the counting of how many nodes are attached to 
-  // given ENB at this point and at the end of a handover
-  // In short: find the enbdevice that is used here for attaching th
-  // ue, what methods does the NetDeviceContainer expose that can be used?
   lteHelper->AttachToClosestEnb(uesdev, enbsdev);
 }
 
@@ -346,57 +352,6 @@ string GetEnBFromMap(const TStrStrMap& uernti_ips_to_enbips_mapping, const strin
   return enb_ip_addr;
 }
 
-
-/* string SimpleGetIpFromMap (map<string, string> cellid_ueip_mapping, string cellid) {
-vector<string> SimpleGetIpFromMap (map<string, string>uernti_ips_to_enbips_mapping, vector<string>connected_ues, string id_rnti_cellid) {
-
-    map<string, string>::iterator itr = uernti_ips_to_enbips_mapping.begin();
-
-    int n, t;
-    std::vector<string> v1;
-    std::vector<string> v2;
-    std::vector<string> diff;
-    string ue_ips, other_ip;
-
-    for (auto i: connected_ues) {
-        n = i.rfind("_");
-	ue_ips = i.substr(n+1, i.size());
-	v1.push_back(ue_ips);
-    }
-
-    while (itr != uernti_ips_to_enbips_mapping.end()) {
-       t = itr->first.rfind("_");
-       other_ip = itr->first.substr(t+1, itr->first.size());
-       v2.push_back(other_ip);
-       ++itr;
-    }
-
-    cout<<endl;
-    for (auto i : v1) std::cout << i << ' ';
-    std::cout << '\n';
-
-    cout<<endl;
-    for (auto i : v2) std::cout << i << ' ';
-    std::cout << '\n';
-   
-    for(auto i: v2) {
-       const auto it = std::find(v1.begin(), v1.end(), i);
-        if(it != v1.end()){
-           v2.erase(it);
-        }
-    }
-
-    cout<<endl;
-    for (auto i : v2) std::cout << i << ' ';
-    std::cout << '\n';
-    
-    cout<<endl;
-    for (auto i : diff) std::cout << i << ' ';
-    std::cout << '\n';
-
-    return diff;
-}
-*/
 
 map<string, string> setEnBIPToPoseMap (string filename) {
 
@@ -716,16 +671,7 @@ void NotifyHandoverEndOkUe (string context, uint64_t imsi, uint16_t cellid, uint
 
 
 void NotifyConnectionEstablishedEnb (string context, uint64_t imsi, uint16_t cellid, uint16_t rnti)
-{  
-   // map<string, string>::iterator itr = connected_imsi_ips_to_enbips_mapping.begin();
-
-    //  cout<<endl;
-    //  while (itr != connected_imsi_ips_to_enbips_mapping.end()) {
-    //     cout << "After Key :==> " << itr->first
-    //          << ", After Value:==> " << itr->second << endl;
-    //     ++itr;
-    //  }
-
+{     
    string id_rnti_cellid = to_string(imsi)+"_"+to_string(cellid)+"_"+to_string(rnti);
    string ip_add = GetIpFromMap(connected_imsi_ips_to_enbips_mapping, id_rnti_cellid);
 
@@ -783,7 +729,6 @@ void NotifyHandoverEndOkEnb (string context, uint64_t imsi, uint16_t cellid, uin
        old_enb_ip_addr =  output_for_enb.str();
     }
 
-    // if ( std::find(ue_handover_list.begin(), ue_handover_list.end(), str_imsi) != ue_handover_list.end() ) {
     if (existing_handed_over_imsi == str_imsi) {
   
         string enb_ip_addr = StartHandoverHandler (rnti);
@@ -802,54 +747,10 @@ void NotifyHandoverEndOkEnb (string context, uint64_t imsi, uint16_t cellid, uin
     }
 }
 
-/*
-void NotifyRecvReport (string context, uint64_t imsi, uint16_t cellid, uint16_t rnti, LteRrcSap::MeasurementReport msg)
-{
-   map<string, string>::iterator itr = connected_imsi_ips_to_enbips_mapping.begin();
-
-   string str_key, existing_cell_id, exising_rnti;
-
-   while (itr != connected_imsi_ips_to_enbips_mapping.end()) {
-      ostringstream os_str1, os_str2;
-      os_str1 << itr->first;
-      str_key = os_str1.str();
-
-          std::size_t found = str_key.find_first_of("_");
-      // if (found != std::string::npos) {
-          existing_cell_id = str_key.substr(found+1, 1); // found+1
-          // exising_rnti = str_key.substr(found+3, 1 ); // found+2, found+1);
-          // if (to_string(cellid) == existing_cell_id) {  //&& (to_string(rnti) == exising_rnti)) {
-	      std::size_t n = str_key.rfind("_");
-              string ip_add = str_key.substr(n+1, str_key.size());
-              // string cell_id = 
-	      // cout<<" \n -------------- "<< current_profiles_ue_add <<" ------ "<<ip_add<<endl;
-	      if ( current_profiles_ue_add == ip_add ) {
-		 if (to_string(cellid) == existing_cell_id) { 
-		   cout<<" \n ------ "<<existing_cell_id<<" ------ "<< current_profiles_ue_add <<" ------ "<<ip_add<<endl;
-     	           std::cout << " \n CellId = " << cellid
-                             << " RSRQ = " << (uint16_t) msg.measResults.rsrqResult
-                             <<" RSRP = " <<(uint16_t) msg.measResults.rsrpResult<<endl;
- 
-	           vect_rsrq_rsrp.push_back(std::make_pair(cellid,rnti));
-		   // break;
-		}
-	      // break;
-          }
-      // }
-      
-      ++itr;
-   }
-
-   // current_profiles_ue_add.clear();
-
-}
-*/
 
 void NotifyUeReport (string context, uint16_t rnti, uint16_t cellId, double rsrp, double rsrq, bool servingCell, uint8_t carrierid) 
 {   
-   if (servingCell == 1) {
-       // vect_rsrq_rsrp.clear();
-
+   if (servingCell == 1) {      
        map<string, string>::iterator itr = connected_imsi_ips_to_enbips_mapping.begin();
        string str_key, existing_cell_id, exising_rnti;
 
@@ -1260,11 +1161,7 @@ Point GetUEAttachedToEnBXYCoords (string ueip) {
 
              if (simulation_enbip == static_enbip) {
 
-		if (simulation_ueip.find(ueip) != std::string::npos) {		
-                    // cout << "UE: + Actual: " << it->first <<" -- "<< ueip 
-                    //   << ", ENB: " << it->second
-                    //   << " at POSE: "<<itr->second <<endl;
-
+		if (simulation_ueip.find(ueip) != std::string::npos) {		               
 		    v_tt << (*itr).second;
                     enb_xy_location = v_tt.str();
 		}
@@ -1290,47 +1187,7 @@ Point GetUEAttachedToEnBXYCoords (string ueip) {
       }
 
      return enb_xy_coords;
-
 }
-
-/*
-void InstallCBRApp ( string nodeip) {
-
-   // 7. Install applications: two CBR streams each saturating the channel
-    ApplicationContainer cbrApps;
-    uint16_t cbrPort = 12345;
-    OnOffHelper onOffHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address (nodeip), cbrPort));
-    onOffHelper.SetAttribute ("PacketSize", UintegerValue (1400));
-    onOffHelper.SetAttribute ("OnTime",  StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
-    onOffHelper.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-   
-    // flow 1:  node 0 -> node 1
-    onOffHelper.SetAttribute ("DataRate", StringValue ("3000000bps"));
-    onOffHelper.SetAttribute ("StartTime", TimeValue (Seconds (1.000000)));
-    cbrApps.Add (onOffHelper.Install (nodes.Get (0)));
-   
-    uint16_t  echoPort = 9;
-    UdpEchoClientHelper echoClientHelper (Ipv4Address ("10.0.0.2"), echoPort);
-    echoClientHelper.SetAttribute ("MaxPackets", UintegerValue (1));
-    echoClientHelper.SetAttribute ("Interval", TimeValue (Seconds (0.1)));
-    echoClientHelper.SetAttribute ("PacketSize", UintegerValue (10));
-    ApplicationContainer pingApps;
-   
-    // again using different start times to workaround Bug 388 and Bug 912
-    echoClientHelper.SetAttribute ("StartTime", TimeValue (Seconds (0.001)));
-    pingApps.Add (echoClientHelper.Install (nodes.Get (0)));
-}
-*/
-
-
-// Return the distance between node and enb
-// double GetDistanceFrom (Ptr<Node> node1, Ptr<Node> node2)
-// {
-// 	Ptr<MobilityModel> model1 = node1->GetObject<MobilityModel>();
-//	Ptr<MobilityModel> model2 = node2->GetObject<MobilityModel>();
-//	double distance = model1->GetDistanceFrom (model2);
-//	return distance;
-// }
 
 
 void ThroughputMonitor (FlowMonitorHelper *fmhelper, Ptr<FlowMonitor> flowMon,Gnuplot2dDataset DataSet,  string ip_add, vector<string> speeds) // , NetDeviceContainer ueDevs, NetDeviceContainer enbDevs)
@@ -1361,13 +1218,7 @@ void ThroughputMonitor (FlowMonitorHelper *fmhelper, Ptr<FlowMonitor> flowMon,Gn
          str_dest << fiveTuple.destinationAddress;
          src_ipadd = str_src.str();
          dest_ipadd = str_dest.str();
-	 // current_profiles_ue_add = dest_ipadd;
-
-	 // ToDo:: get enb coordinates that a ue is attached to from file
-	 // That is, use uernti_ips_to_enbips_mapping and vect_ip_pose
-	 // i.e find enb ip to which dest_ipadd is mapped and extract x-y pose value 
-	 // the enb. Then use x and y coords of ue below as input to function calculateDistance()
-
+	 
 	 if (counter == 0) {
             break;
          }
@@ -1451,7 +1302,7 @@ void ThroughputMonitor (FlowMonitorHelper *fmhelper, Ptr<FlowMonitor> flowMon,Gn
 
 	                         command += x+":"+y+":"+vel_x+":"+vel_y+":"+src_ipadd+":"+dest_ipadd+":"+tx+":"+rx+":"+thruput+":"+avg_delay+":"+avg_jitter+":"+lst_pkts+":"+to_string(dist_btn_enb_and_ue)+":"+cellID_attached_to+":"+enb_ip_addr+":"+to_string(num_connected_ues)+":"+str_rsrq+":"+str_rsrp;
                                  std::cout<<"\n ++++ "<<command <<endl;
-	                         // system(command.c_str());
+	                         system(command.c_str());
 		 	   }
 		        }
 	      
@@ -1572,27 +1423,11 @@ Parameters
 
   ConfigStore config;
   config.ConfigureDefaults ();
-  
-  //BS parameters - 3GPP TR 36.942 V14.0.0 but with 500m
-  // double beamwidth = 65.0;
-  // double maxAttenuation = 20.0;
-  // double interSiteDistance = 500;
-  // double macroEnbTxPowerDbm = 46.0;
 
-  //Other parameters
-  // bool enableTraces = true;
-  // bool useUdp = false;
-  // bool epcDl = true;
-  // bool epcUl = false;
-  // ues and enbs
   uint16_t numberOfUes = GetNumberOfUesInFile("scratch/trajectory.txt");
   uint16_t numberOfEnbs = GetNumberOfEnbsInFile("scratch/enbLocations.txt");
 
   std::vector<UeData> m_ueDataVector;
-
-  //937.5 MB
-  //Official documentation: https://support.google.com/youtube/answer/2853702?hl=en
-  // uint64_t bytesToTransfer = 9.375E7;
 
 /*
 ###################################################################################################
@@ -1804,10 +1639,7 @@ Installing Internet
      trunct = str_add.str();
      dot_delim = trunct.find(".", start);
 
-     // node_id = trunct.substr(start,7);
-     // nodes.push_back(trunct);
      string command = "./csv_writer.py "+trunct+" ";
-
      static bool first_time = true;
 
      while (ss >> word)
@@ -1832,8 +1664,6 @@ Installing Internet
      
       Simulator::Schedule(Seconds(1.0), &attachinfuture, ueLteDevs, enbLteDevs); // j);
 
-     // CheckConnected( ueLteDevs, enbLteDevs); // , enbNodes);
-
       if(first_time) {
          first_time = false;
          Config::Connect ("/NodeList/*/$ns3::MobilityModel/CourseChange", MakeCallback (&CourseChange));
@@ -1841,11 +1671,7 @@ Installing Internet
  
       speed_sizes.push_back(speeds.size());     
 
-     // trajectory_sizes = getNodesTrajectorySizes(speed_sizes, nodes);
-
-      ThroughputMonitor(&fmHelper, flowMonitor, dataset, trunct, speeds); // , ueLteDevs, enbLteDevs); //, nodes); 
-     
-     // CheckConnected( ueLteDevs, enbLteDevs);
+      ThroughputMonitor(&fmHelper, flowMonitor, dataset, trunct, speeds); // , ueLteDevs, enbLteDevs); //, nodes);      
 
       veh_time.erase();
       veh_speed.erase();
@@ -1873,8 +1699,6 @@ Installing Internet
 
     getIpAddMacAddMapping (enbNodes);
 
-    // config.ConfigureAttributes ();
-
      Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/ConnectionEstablished",
                      MakeCallback (&NotifyConnectionEstablishedEnb));
      Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/ConnectionEstablished",
@@ -1891,23 +1715,7 @@ Installing Internet
                      MakeCallback (&NotifyNewUeContext)); 
      Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LteNetDevice/$ns3::LteUeNetDevice/ComponentCarrierMapUe/*/LteUePhy/ReportUeMeasurements",
       		     MakeCallback (&NotifyUeReport));
-     // Config::Connect("/NodeList/*/DeviceList/*/LteEnbRrc/RecvMeasurementReport",
-     //                MakeCallback (&NotifyRecvReport));
-
-
-    //
-    //Here get rid of the old approach of using the rnti as the count for the number of ues 
-    // attached to the enb. We create a vector mapping and do a grouping based 
-    // on similar keys then for each key count the number of the values:
-    // Struct like <enb_ip:list[ue ips]>
-    // So at each required time we simple extrac the enb of interest and give a count 
-    // on the size of the values vector as the number of ues attached at that point in time.
-    //
-    // FixMe:: Move to the handovers, pass this mapping structure such that when a ue is handed 
-    // over to another enb the list is updates bi-directionally, from source and destination.
-    //
-    // for (const auto & foo : ueips_to_enbips_mapping) foos_by_x[foo.x].push_back(foo);
-
+     
 /*
 ###################################################################################################
 Application
@@ -1921,124 +1729,11 @@ Application
   Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue (1000000000)); 
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true)); //RRC = Radio Resource Control
 
-  // Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("output-attributes.txt"));
-  // Config::SetDefault("ns3::ConfigStore::FileFormat", StringValue("RawText"));
-  // Config::SetDefault("ns3::ConfigStore::Mode", StringValue("Save"));
-
-  // ConfigStore outputConfig;
-  // outputConfig.ConfigureDefaults();
-  // outputConfig.ConfigureAttributes();
-
-/*
-  uinit16_t sinkPort = 8080;
-
-  uint16_t dlPort = 10000;
-  uint16_t ulPort = 20000;
-
-  
-  for  (uint32_t t = 0; t < ueNodes.GetN(); ++t ) {
-     ++dlPort;
-     ++ulPort;
-     // Activate a data radio bearer each UE
-     Ptr<EpcTft> tft = Create<EpcTft> ();
-     // always true: if (epcDl)
-     {
-        EpcTft::PacketFilter dlpf;
-        dlpf.localPortStart = dlPort;
-        dlpf.localPortEnd = dlPort;
-        tft->Add (dlpf);
-     }
-     // always true: if (epcUl)
-     {
-        EpcTft::PacketFilter ulpf;
-        ulpf.remotePortStart = ulPort;
-        ulpf.remotePortEnd = ulPort;
-        ft->Add (ulpf);
-     }
-
-     // always true: if (epcDl || epcUl)
-     EpsBearer bearer (EpsBearer::GBR_CONV_VOICE);
-     lteHelper->ActivateDedicatedEpsBearer (ueLteDevs.Get (t), bearer, tft);
-
-     Address sinkAddress (InetSocketAddress (ueIpIface.GetAddress (t), sinkPort));
-     PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
-     ApplicationContainer sinkApps = packetSinkHelper.Install (ueNodes.Get (t));
-     sinkApps.Start (Seconds (0.));
-     sinkApps.Stop (Seconds (sim_time));
-
-     Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (ueNodes.Get(t), TcpSocketFactory::GetTypeId ());
-     ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&CwndChange));
-
-     Ptr<TCPApp> app = CreateObject<TCPApp> ();
-     app->Setup (ns3TcpSocket, sinkAddress, 2040, 1000, DataRate ("1Mbps"));
-     ueNodes.Get (t)->AddApplication (app);
-     app->SetStartTime (Seconds (1.));
-     app->SetStopTime (Seconds (20.));
-
-     ueLteDevs.Get (t)->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&RxDrop));
-  }
-*/
-
   // Install and start applications on UEs and remote host
   uint16_t dlPort = 10000;
   uint16_t ulPort = 20000;
 
   lteHelper->AddX2Interface (enbNodes);
-
-
-// Create two udpServer applications on node one.
-
-  // uint16_t server_port = 4000;
-  // UdpServerHelper server (server_port);
-  // for (int k = 0; k < numEnbNodes; k++) {
-  //   ApplicationContainer apps = server.Install (enbNodes.Get (0));    
-  //   ApplicationContainer apps = server.Install (enbNodes.Get (k));
-  //   apps.Start (Seconds (1.0));
-  //   apps.Stop (Seconds (10.0));
-  // }
-
-  //
-// Create one UdpTraceClient application to send UDP datagrams from enb to selected UEs
-//
-//   uint32_t MaxPacketSize = 1472;  // Back off 20 (IP) + 8 (UDP) bytes from MTU
-//  UdpTraceClientHelper client (remoteHostAddr, port,"");
-//  client.SetAttribute ("MaxPacketSize", UintegerValue (MaxPacketSize));
-
- /*
-  ApplicationContainer cbrApps;
-  uint16_t cbrPort = 12345;
-  OnOffHelper onOffHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address ("1.0.0.2"), cbrPort));
-  onOffHelper.SetAttribute ("PacketSize", UintegerValue (1400));
-  onOffHelper.SetAttribute ("OnTime",  StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
-  onOffHelper.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-
-  onOffHelper.SetAttribute ("DataRate", StringValue ("3000000bps"));
-  onOffHelper.SetAttribute ("StartTime", TimeValue (Seconds (1.000000)));
-
-  // for (int t = 0; t < numEnbNodes; t++ ) {
-  //   cbrApps.Add (onOffHelper.Install (enbNodes.Get (t)));
-  // }
-
-  uint16_t  echoPort = 9;
-  UdpEchoClientHelper echoClientHelper (Ipv4Address ("1.0.0.2"), echoPort);
-  echoClientHelper.SetAttribute ("MaxPackets", UintegerValue (1));
-  echoClientHelper.SetAttribute ("Interval", TimeValue (Seconds (0.1)));
-  echoClientHelper.SetAttribute ("PacketSize", UintegerValue (10));
-  // again using different start times to workaround Bug 388 and Bug 912
-  echoClientHelper.SetAttribute ("StartTime", TimeValue (Seconds (0.001)));
-  ApplicationContainer pingApps;
-
-  for (uint32_t count = 0; count < numberOfUes; count+=2)
-  {
-    apps = client.Install (ueNodes.Get (count));
-    apps.Start (Seconds (2.0));
-    apps.Stop (Seconds (sim_time));
-
-    // pingApps.Add (echoClientHelper.Install (ueNodes.Get (count)));
-  }
-
-*/
- 
 
   // randomize a bit start times to avoid simulation artifacts
   // (e.g., buffer overflows due to packet transmissions happening
