@@ -5,7 +5,7 @@ NS3+SUMO integration and functionality customization for QoS Sustainability pred
 **Dependencies**
 - Compiled using _gcc version 9.4.0_
 - On _ubuntu1~20.04.2_
-- 
+  
 With these extensions to NS-3 functionality, it is now possible to simulate mobility use-cases 
 like V2X setups. The mobility profile for each device in a selected cite is topographically 
 captured by Open Street Map and emulated using the SUMO tool. The output of this emulation is then
@@ -22,9 +22,6 @@ using ML algorithms.
 - The metrics are recoreded into a _.csv_ file using the _metric_writer.py_ file.
 
 **Notes**
-- Ping-Pong effect: As documented in our findings, setting the jockeying threshold to a low value resulted in the behaviour that
-  packets jumps were so often leading to a intractable system. Getting out of this system state then required application termination
-  and we are working to improving the handling of these cases in code.
 
 **Contact**
 - For pull requests please send an email to:
