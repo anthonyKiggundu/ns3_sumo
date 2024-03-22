@@ -16,7 +16,7 @@ are then the input to the NS-3 tooling such that the throughput measures of each
 standard connectivity metrics are written as a dataset for self-organizing the Radio Access Network
 using ML algorithms.
 
-- A brief guide on getting the topographic city map captured using osm can be followed here.
+- A brief guide on getting the topographic city map captured using osm can be followed [here](https://sumo.dlr.de/docs/Tutorials/OSMWebWizard.html).
 - The output above is an _osmsumo.cfg_ file from which trajcetories are read  (TraCI) by the _scratch/binder.py_ file.
 - The trajectories are stored in the _trajectories.txt_ and gNodeB poses in the _scratch/enbLocations.txt_
 - All enhancements were done in the _scratch/overly.cc_ file
