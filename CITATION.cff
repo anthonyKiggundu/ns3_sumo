@@ -9,7 +9,7 @@ authors:
     given-names: Michael 
   - family-names: Schotten
     given-names: Hans. D
-title: "A Mobility Oriented Use-case Framework for Ouality Of Service Sustainability Simulations"
+title: "A simulation framework for mobility use case oriented RAN dataset generation"
 url: ""
 date-released: 2024-05-15
 doi: ""
@@ -36,12 +36,16 @@ preferred-citation:
       given-names: Michael 
     - family-names: Schotten
       given-names: Hans. D
+  collection-title: "IEEE Explore" 
+  collection-type: "proceedings"
+  conference:
+    name: "28. VDE-ITG-Fachtagung Mobilkommunikation"
   doi: "10.10/"
   journal: "IEEE Explore"
   month: 5
   start: 00
   end: 00
-  title: "A Mobility Oriented Use-case Framework for Ouality Of Service Sustainability Simulations"
+  title: "A simulation framework for mobility use case oriented RAN dataset generation"
   issue: ""
   volume: ""
   year: 2024
