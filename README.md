@@ -1,6 +1,6 @@
 **Get Started**
 
-NS3+SUMO integration and functionality customization for QoS Sustainability prediction in V2X/UE networks 
+ns3+SUMO integration and functionality customization for QoS Sustainability datasets generation in V2X/UE networks 
 
 
 **Dependencies**
@@ -18,9 +18,9 @@ using ML algorithms.
 
 - A brief guide on getting the topographic city map captured using osm can be followed [here](https://sumo.dlr.de/docs/Tutorials/OSMWebWizard.html).
 - The output from _osmWebWizard.py_ above is an _osmsumo.cfg_ file from which trajectories are read  (using TraCI) by the _scratch/binder.py_ file.
-- The trajectories are stored in the _trajectories.txt_ and gNodeB poses in the _scratch/enbLocations.txt_
+- The trajectories are stored in the _trajectories.txt_ and gNodeB poses in the _scratch/enbs.txt_
 - All enhancements were done in the _scratch/overly.cc_ file
-- The metrics are recoreded into a _.csv_ file using the _metric_writer.py_ file.
+- The metrics are recorded into a _.csv_ file using the _metric_writer.py_ file.
 
 **Notes**
 
