@@ -1023,7 +1023,7 @@ double CalculateDistance(Point a, Point b) {
 Point GetUEAttachedToEnBXYCoords (string ueip) {
 
 	map<string, string> vect_ip_pose;
-        vect_ip_pose = setEnBIPToPoseMap ("scratch/enbLocations.txt");
+        vect_ip_pose = setEnBIPToPoseMap ("scratch/enbs.txt");
 	std::string enb_xy_location;
 
         map<string, string>::iterator it = connected_ips_to_enbips_mapping.begin();
@@ -1300,7 +1300,7 @@ Parameters
 
   fstream enbFile, uesFile;
 
-  enbFile.open("scratch/enbLocations.txt",ios::in);
+  enbFile.open("scratch/enbs.txt",ios::in);
 
   uesFile.open("scratch/trajectory.txt",ios::in);
 
@@ -1311,7 +1311,7 @@ Parameters
   config.ConfigureDefaults ();
 
   uint16_t numberOfUes = GetNumberOfUesInFile("scratch/trajectory.txt");
-  uint16_t numberOfEnbs = GetNumberOfEnbsInFile("scratch/enbLocations.txt");
+  uint16_t numberOfEnbs = GetNumberOfEnbsInFile("scratch/enbs.txt");
 
   std::vector<UeData> m_ueDataVector;
 
