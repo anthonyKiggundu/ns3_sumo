@@ -1615,6 +1615,38 @@ Application
   Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue (1000000000)); 
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true)); //RRC = Radio Resource Control
 
+  uint16_t port = 10000;
+
+  // *********** OnAndOff Application OPTION 1: ***************** //
+  /*
+  Ptr<UniformRandomVariable> startTimeSeconds = CreateObject<UniformRandomVariable> ();
+  startTimeSeconds->SetAttribute ("Min", DoubleValue (0));
+  startTimeSeconds->SetAttribute ("Max", DoubleValue (0.010));
+
+   Config::SetDefault("ns3::OnOffApplication::PacketSize", StringValue("64"));
+   Config::SetDefault("ns3::OnOffApplication::DataRate", StringValue(rate)); 
+
+   OnOffHelper onoff1("ns3::UdpSocketFactory", Address());
+
+   onOffHelper.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+   onOffHelper.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+
+   for (int i = 0; i < ueNodes.GetN(); i++)
+    {
+        PacketSinkHelper sink ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dlPort));
+        onOffHelper.SetAttribute("Remote", remoteHostAddr);
+        ApplicationContainer app = sink.Install (ueNodes.Get(i))
+
+        app = onOffHelper.Install (ueNodes.Get (i));
+        // Start the application
+        app.Start (Seconds (1.0));
+        app.Stop (Seconds (100.0));
+    }
+ 
+  */
+
+  // *********** OnAndOff Application OPTION 2: ***************** //
+
   // Install and start applications on UEs and remote host
   uint16_t dlPort = 10000;
   uint16_t ulPort = 20000;
