@@ -20,7 +20,7 @@ using ML algorithms.
 - The output from _osmWebWizard.py_ above is an _osmsumo.cfg_ file from which trajectories are read  (using TraCI) by the _scratch/binder.py_ file.
 - The trajectories are stored in the _trajectories.txt_ and gNodeB poses in the _scratch/enbs.txt_
 - All enhancements were done in the _scratch/overly.cc_ file
-- The metrics are recorded into a _.csv_ file using the _metric_writer.py_ file.
+- The metrics like distance between eNB and UE, how many UEs are attached to an eNB are recorded into a _.csv_ file using the _metric_writer.py_ file.
 
 **Notes**
 
